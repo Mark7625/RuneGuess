@@ -1,0 +1,45 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 40 25% 7%;
+    --foreground: 40 40% 96%;
+    --card: 35 18% 10%;
+    --card-foreground: 40 40% 96%;
+    --border: 40 10% 30%;
+    --primary: 42 85% 55%;
+    --primary-foreground: 40 25% 10%;
+    --secondary: 30 18% 15%;
+    --secondary-foreground: 40 30% 90%;
+    --muted: 35 18% 12%;
+    --muted-foreground: 40 20% 70%;
+    --accent: 48 90% 63%;
+    --accent-foreground: 40 25% 10%;
+    --destructive: 0 70% 45%;
+    --destructive-foreground: 40 40% 96%;
+    --ring: 40 90% 60%;
+    --radius-lg: 0.75rem;
+    --radius-md: 0.5rem;
+    --radius-sm: 0.25rem;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "liga" 1, "calt" 1;
+  }
+}
+
+.osrs-panel {
+  @apply bg-card border border-border shadow-osrs-panel rounded-lg;
+}
+
+.osrs-button {
+  @apply inline-flex items-center justify-center rounded-md border border-border bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-osrs-button transition hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-60;
+}
+
+.osrs-button-secondary {
+  @apply inline-flex items-center justify-center rounded-md border border-border bg-secondary px-3 py-2 text-xs font-medium text-secondary-foreground shadow-osrs-button transition hover:brightness-110;
+}
+
