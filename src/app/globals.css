@@ -43,3 +43,18 @@
   @apply inline-flex items-center justify-center rounded-md border border-border bg-secondary px-3 py-2 text-xs font-medium text-secondary-foreground shadow-osrs-button transition hover:brightness-110;
 }
 
+@keyframes firework {
+  0% {
+    transform: rotate(var(--angle)) translateX(0) scale(1);
+    opacity: 0.95;
+  }
+  100% {
+    transform: rotate(var(--angle)) translateX(100px) scale(0);
+    opacity: 0;
+  }
+}
+
+.animate-firework {
+  animation: firework 1s ease-out forwards;
+}
+

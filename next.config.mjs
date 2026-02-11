@@ -20,6 +20,12 @@ const nextConfig = {
         hostname: "chisel.weirdgloop.org",
         port: "",
         pathname: "/static/img/**"
+      },
+      {
+        protocol: "https",
+        hostname: "lh3.googleusercontent.com",
+        port: "",
+        pathname: "/**"
       }
     ]
   }
