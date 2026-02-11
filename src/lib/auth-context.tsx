@@ -78,6 +78,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [refreshUser]);
 
+  // Handle token passed via ?token=... on the root page.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const url = new URL(window.location.href);
+    const tokenParam = url.searchParams.get("token");
+    if (!tokenParam) return;
+
+    const token = tokenParam;
+    localStorage.setItem(TOKEN_KEY, token);
+    sessionStorage.setItem(JUST_LOGGED_IN_KEY, "1");
+
+    // Clean the URL so the token isn't kept in the address bar/history.
+    url.searchParams.delete("token");
+    window.history.replaceState(null, "", url.toString());
+
+    refreshUser();
+  }, [refreshUser]);
+
   const login = useCallback(async () => {
     const url = await getGoogleLoginUrl();
     if (url) window.location.href = url;

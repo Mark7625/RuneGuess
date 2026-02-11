@@ -2,6 +2,13 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 
 const DISMISSED_KEY = "runeguess_username_modal_dismissed";
 
@@ -25,8 +32,6 @@ export function SetUsernameModal({ open, onClose, onSetUsername }: SetUsernameMo
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  if (!open) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -56,25 +61,24 @@ export function SetUsernameModal({ open, onClose, onSetUsername }: SetUsernameMo
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div
-        className="absolute inset-0 bg-black/70 backdrop-blur-sm"
-        onClick={handleLater}
-        aria-hidden
-      />
-      <div
-        className="relative w-full max-w-md rounded-lg border border-amber-500/50 bg-zinc-900 p-6 shadow-xl"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="set-username-title"
-      >
-        <h2 id="set-username-title" className="mb-2 text-lg font-semibold text-amber-200">
-          You haven&apos;t set a username
-        </h2>
-        <p className="mb-4 text-sm text-zinc-300">
-          Would you like to choose one now? You can also do this later in Settings.
-        </p>
-        <form onSubmit={handleSubmit} className="mb-4">
+    <Dialog
+      open={open}
+      onOpenChange={(isOpen) => {
+        // Treat any external close (overlay click / ESC) as "Later"
+        if (!isOpen && open) {
+          handleLater();
+        }
+      }}
+    >
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>You haven&apos;t set a username</DialogTitle>
+          <DialogDescription>
+            Would you like to choose one now? You can also do this later in Settings.
+          </DialogDescription>
+        </DialogHeader>
+
+        <form onSubmit={handleSubmit} className="mb-4 space-y-3">
           <input
             type="text"
             value={input}
@@ -83,13 +87,13 @@ export function SetUsernameModal({ open, onClose, onSetUsername }: SetUsernameMo
               setError(null);
             }}
             placeholder="Username (3–30 characters)"
-            className="mb-2 w-full rounded border border-zinc-600 bg-zinc-800 px-3 py-2 text-sm text-amber-100 placeholder-zinc-500 focus:border-amber-500 focus:outline-none"
+            className="w-full rounded border border-input bg-muted px-3 py-2 text-sm text-amber-100 placeholder-zinc-500 focus:border-amber-500 focus:outline-none"
             maxLength={30}
             autoFocus
             disabled={loading}
           />
-          {error && <p className="mb-2 text-xs text-red-400">{error}</p>}
-          <div className="flex gap-2">
+          {error && <p className="text-xs text-red-400">{error}</p>}
+          <div className="flex gap-2 pt-1">
             <Button type="submit" disabled={loading} className="flex-1">
               {loading ? "Setting…" : "Set username"}
             </Button>
@@ -98,10 +102,12 @@ export function SetUsernameModal({ open, onClose, onSetUsername }: SetUsernameMo
             </Button>
           </div>
         </form>
-        <p className="text-xs text-zinc-500">
+
+        <p className="text-xs text-muted-foreground">
           You can change this anytime in Settings.
         </p>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }
+

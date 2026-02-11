@@ -4,25 +4,62 @@
 
 @layer base {
   :root {
-    --background: 40 25% 7%;
-    --foreground: 40 40% 96%;
-    --card: 35 18% 10%;
-    --card-foreground: 40 40% 96%;
-    --border: 40 10% 30%;
-    --primary: 42 85% 55%;
-    --primary-foreground: 40 25% 10%;
-    --secondary: 30 18% 15%;
-    --secondary-foreground: 40 30% 90%;
-    --muted: 35 18% 12%;
-    --muted-foreground: 40 20% 70%;
-    --accent: 48 90% 63%;
-    --accent-foreground: 40 25% 10%;
-    --destructive: 0 70% 45%;
-    --destructive-foreground: 40 40% 96%;
-    --ring: 40 90% 60%;
+    /* OSRS (default) — based on OSRS Wiki branding/dark palette */
+    --background: #1b1612; /* ebony-brown */
+    --foreground: #e2dbc8; /* body-main */
+    --card: #28221d; /* mocha-brown */
+    --card-foreground: #e2dbc8;
+    --border: #736559; /* taupe-brown */
+    --input: #3e362f; /* sable-brown */
+    --primary: #f9d000; /* supernova */
+    --primary-foreground: #18140c; /* button-dark */
+    --secondary: #312a25; /* cacao-brown */
+    --secondary-foreground: #e2dbc8;
+    --muted: #3e362f; /* sable-brown */
+    --muted-foreground: #b79d7e; /* kharid-sand */
+    --accent: #936039; /* link-color */
+    --accent-foreground: #f9f9f9; /* alabaster */
+    --destructive: #9f261e; /* old-brick */
+    --destructive-foreground: #feecea; /* bridesmaid */
+    --popover: #28221d; /* mocha-brown - same as card */
+    --popover-foreground: #e2dbc8; /* body-main */
+    --ring: #f9d000;
+
+    /* Page background gradient stops */
+    --bg-from: #1b1612; /* ebony-brown */
+    --bg-via: #28221d; /* mocha-brown */
+    --bg-to: #000000;
     --radius-lg: 0.75rem;
     --radius-md: 0.5rem;
     --radius-sm: 0.25rem;
+  }
+
+  :root[data-theme="rs3"] {
+    /* RS3 — cool/dark blue palette */
+    --background: #071022; /* black-pearl */
+    --foreground: #e5f3fc; /* tropical-blue */
+    --card: #172136; /* big-stone */
+    --card-foreground: #e5f3fc;
+    --border: #596e96; /* waikawa-grey */
+    --input: #313e59; /* pickled-bluewood */
+    --primary: #3ea6e6; /* curious-blue */
+    --primary-foreground: #071022;
+    --secondary: #222e45; /* cloud-burst */
+    --secondary-foreground: #e5f3fc;
+    --muted: #313e59;
+    --muted-foreground: #aad9f5; /* jordy-blue */
+    --accent: #8cabe6; /* portage */
+    --accent-foreground: #071022;
+    --destructive: #ee4231; /* flamingo */
+    --destructive-foreground: #feecea;
+    --popover: #172136; /* big-stone - same as card */
+    --popover-foreground: #e5f3fc; /* tropical-blue */
+    --ring: #3ea6e6;
+
+    /* Page background gradient stops */
+    --bg-from: #071022; /* black-pearl */
+    --bg-via: #172136; /* big-stone */
+    --bg-to: #000000;
   }
 
   body {

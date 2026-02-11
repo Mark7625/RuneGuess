@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import "./globals.css";
-import { AuthProvider } from "@/lib/auth-context";
+import { Providers } from "@/components/Providers";
 
 export const metadata = {
   title: "RuneGuess",
@@ -11,7 +11,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       <body className="min-h-screen bg-background text-foreground antialiased">
-        <AuthProvider>{children}</AuthProvider>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );
