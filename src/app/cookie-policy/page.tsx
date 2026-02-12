@@ -1,26 +1,32 @@
+import type { Metadata } from "next";
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-export const metadata = {
-  title: "Cookie Policy | RuneGuess",
-  description: "Cookie Policy for RuneGuess",
+export const metadata: Metadata = {
+  title: "Cookie Policy",
+  description: "Learn about how RuneGuess uses cookies and local storage. Understand our data practices and your privacy choices.",
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function CookiePolicyPage() {
   return (
     <main className="min-h-screen bg-gradient-to-b from-zinc-900 via-stone-900 to-black px-4 py-12 text-foreground">
       <div className="mx-auto max-w-2xl space-y-8">
-        <div>
-          <Link
-            href="/"
-            className="text-sm text-amber-200/90 underline-offset-2 hover:underline"
-          >
+        <Button variant="link" asChild className="text-amber-200/90 p-0 h-auto">
+          <Link href="/">
             ← Back to RuneGuess
           </Link>
-        </div>
-        <h1 className="text-2xl font-bold text-amber-200">Cookie Policy</h1>
-        <p className="text-sm text-zinc-400">Last updated: {new Date().toLocaleDateString("en-US")}</p>
-
-        <section className="space-y-4 text-sm text-zinc-300">
+        </Button>
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-2xl font-bold text-amber-200">Cookie Policy</CardTitle>
+            <p className="text-sm text-muted-foreground">Last updated: {new Date().toLocaleDateString("en-US")}</p>
+          </CardHeader>
+          <CardContent className="space-y-4 text-sm">
           <h2 className="text-base font-semibold text-amber-100">1. What Are Cookies</h2>
           <p>
             Cookies are small text files stored on your device when you visit a website. They help the site remember your preferences and improve your experience.
@@ -51,11 +57,12 @@ export default function CookiePolicyPage() {
             We may update this Cookie Policy from time to time. The &quot;Last updated&quot; date at the top will reflect any changes.
           </p>
 
-          <h2 className="text-base font-semibold text-amber-100">7. Contact</h2>
-          <p>
-            For questions about cookies or privacy, contact us via Discord or GitHub as linked on the main page.
-          </p>
-        </section>
+            <h2 className="text-base font-semibold text-amber-100">7. Contact</h2>
+            <p>
+              For questions about cookies or privacy, contact us via Discord or GitHub as linked on the main page.
+            </p>
+          </CardContent>
+        </Card>
       </div>
     </main>
   );

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { Card, CardContent } from "@/components/ui/card";
 
 const TOKEN_KEY = "runeguess_token";
 const JUST_LOGGED_IN_KEY = "runeguess_just_logged_in";
@@ -44,8 +45,12 @@ export default function AuthCallbackPage() {
   }, []);
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-b from-zinc-900 to-black text-amber-200">
-      <p className="text-sm text-center px-4">Logging you in…</p>
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-b from-zinc-900 to-black">
+      <Card>
+        <CardContent className="pt-6">
+          <p className="text-sm text-center text-amber-200">Logging you in…</p>
+        </CardContent>
+      </Card>
     </div>
   );
 }

@@ -66,6 +66,17 @@
     @apply bg-background text-foreground;
     font-feature-settings: "liga" 1, "calt" 1;
   }
+
+  input,
+  select,
+  textarea {
+    @apply bg-input text-foreground border-border;
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    @apply text-muted-foreground;
+  }
 }
 
 .osrs-panel {
@@ -93,5 +104,56 @@
 
 .animate-firework {
   animation: firework 1s ease-out forwards;
+}
+
+/* Global custom scrollbars — always visible to prevent layout jumping */
+html {
+  /* Firefox - always show scrollbar space */
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+  /* Reserve space for scrollbar to prevent layout jumping */
+  scrollbar-gutter: stable;
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: var(--border);
+  border-radius: 9999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  /* Always show thumb - when not scrollable, browser shows it as full height */
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background-color: var(--muted-foreground);
+}
+
+/* For elements with overflow-y-scroll, ensure thumb is always visible */
+.overflow-y-scroll::-webkit-scrollbar-thumb,
+.overflow-y-scroll::-webkit-scrollbar-thumb {
+  /* Make thumb always visible, appearing as filled bar when not scrollable */
+  background-color: var(--border);
+  opacity: 0.7;
+}
+
+.overflow-y-scroll:hover::-webkit-scrollbar-thumb,
+.overflow-y-scroll:active::-webkit-scrollbar-thumb {
+  opacity: 1;
+}
+
+/* Reserve scrollbar space for elements with overflow to prevent layout jumping */
+.overflow-y-auto,
+.overflow-y-scroll,
+.overflow-x-auto,
+.overflow-x-scroll {
+  scrollbar-gutter: stable;
 }
 

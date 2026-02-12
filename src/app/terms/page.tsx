@@ -1,26 +1,32 @@
+import type { Metadata } from "next";
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-export const metadata = {
-  title: "Terms of Service | RuneGuess",
-  description: "Terms of Service for RuneGuess",
+export const metadata: Metadata = {
+  title: "Terms of Service",
+  description: "Read the Terms of Service for RuneGuess. Learn about our rules, user conduct, intellectual property, and service terms.",
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function TermsPage() {
   return (
     <main className="min-h-screen bg-gradient-to-b from-zinc-900 via-stone-900 to-black px-4 py-12 text-foreground">
       <div className="mx-auto max-w-2xl space-y-8">
-        <div>
-          <Link
-            href="/"
-            className="text-sm text-amber-200/90 underline-offset-2 hover:underline"
-          >
+        <Button variant="link" asChild className="text-amber-200/90 p-0 h-auto">
+          <Link href="/">
             ← Back to RuneGuess
           </Link>
-        </div>
-        <h1 className="text-2xl font-bold text-amber-200">Terms of Service</h1>
-        <p className="text-sm text-zinc-400">Last updated: {new Date().toLocaleDateString("en-US")}</p>
-
-        <section className="space-y-4 text-sm text-zinc-300">
+        </Button>
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-2xl font-bold text-amber-200">Terms of Service</CardTitle>
+            <p className="text-sm text-muted-foreground">Last updated: {new Date().toLocaleDateString("en-US")}</p>
+          </CardHeader>
+          <CardContent className="space-y-4 text-sm">
           <h2 className="text-base font-semibold text-amber-100">1. Acceptance of Terms</h2>
           <p>
             By using RuneGuess, you agree to these Terms of Service. If you do not agree, please do not use the service.
@@ -51,11 +57,12 @@ export default function TermsPage() {
             The service is provided &quot;as is&quot; without warranties of any kind. We are not liable for any damages arising from your use of RuneGuess.
           </p>
 
-          <h2 className="text-base font-semibold text-amber-100">7. Contact</h2>
-          <p>
-            For questions about these terms, you can reach out via our Discord or GitHub linked on the main page.
-          </p>
-        </section>
+            <h2 className="text-base font-semibold text-amber-100">7. Contact</h2>
+            <p>
+              For questions about these terms, you can reach out via our Discord or GitHub linked on the main page.
+            </p>
+          </CardContent>
+        </Card>
       </div>
     </main>
   );

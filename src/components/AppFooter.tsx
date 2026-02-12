@@ -9,9 +9,10 @@ import {
   DialogDescription,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Coffee, Github, MessageCircle } from "lucide-react";
+import Link from "next/link";
+import { Coffee, Github, MessageCircle, Trophy } from "lucide-react";
 
-export function AppFooter() {
+export function AppFooter({ onLeaderboardClick }: { onLeaderboardClick?: () => void } = {}) {
   return (
     <footer className="mt-auto flex w-full max-w-4xl flex-wrap items-center justify-between gap-3 py-6 text-muted-foreground">
       <div className="flex items-center gap-2">
@@ -64,7 +65,6 @@ export function AppFooter() {
       <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
         <span>© {new Date().getFullYear()} RuneGuess. All rights reserved.</span>
         <span className="text-border">·</span>
-
         <Dialog>
           <DialogTrigger asChild>
             <button className="underline-offset-2 hover:underline text-amber-200/90">

@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Dialog,
   DialogContent,
@@ -79,20 +81,23 @@ export function SetUsernameModal({ open, onClose, onSetUsername }: SetUsernameMo
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="mb-4 space-y-3">
-          <input
-            type="text"
-            value={input}
-            onChange={(e) => {
-              setInput(e.target.value);
-              setError(null);
-            }}
-            placeholder="Username (3–30 characters)"
-            className="w-full rounded border border-input bg-muted px-3 py-2 text-sm text-amber-100 placeholder-zinc-500 focus:border-amber-500 focus:outline-none"
-            maxLength={30}
-            autoFocus
-            disabled={loading}
-          />
-          {error && <p className="text-xs text-red-400">{error}</p>}
+          <div className="space-y-2">
+            <Label htmlFor="username-input">Username</Label>
+            <Input
+              id="username-input"
+              type="text"
+              value={input}
+              onChange={(e) => {
+                setInput(e.target.value);
+                setError(null);
+              }}
+              placeholder="Username (3–30 characters)"
+              maxLength={30}
+              autoFocus
+              disabled={loading}
+            />
+            {error && <p className="text-xs text-destructive">{error}</p>}
+          </div>
           <div className="flex gap-2 pt-1">
             <Button type="submit" disabled={loading} className="flex-1">
               {loading ? "Setting…" : "Set username"}
