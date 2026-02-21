@@ -307,7 +307,7 @@ export function AppNav({
                     >
                       <Avatar className="h-8 w-8">
                         <img
-                            src={user.pictureUrl}
+                            src={user.pictureUrl ?? undefined}
                             alt=""
                             className="h-full w-full object-cover"
                             width={32}

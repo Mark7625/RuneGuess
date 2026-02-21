@@ -502,7 +502,7 @@ export const GuessTheExamineGame = forwardRef<GuessTheExamineGameHandle, { onGam
       {serverError && (
         <div className="fixed top-16 left-1/2 -translate-x-1/2 z-50 max-w-xl mx-4">
           <Alert variant="destructive" className="flex items-center gap-3">
-            <XCircle className="h-5 w-5 shrink-0" />
+            <FaTimesCircle className="h-5 w-5 shrink-0" />
             <AlertDescription className="flex-1">{serverError}</AlertDescription>
             <Button
               size="sm"
