@@ -1,6 +1,5 @@
 import { SignJWT, jwtVerify } from "jose";
 import { OAuth2Client } from "google-auth-library";
-import { getDb, type DbUser } from "./db";
 import type { NextRequest } from "next/server";
 
 const JWT_SECRET = process.env.JWT_SECRET ?? "";
@@ -62,28 +61,4 @@ export async function verifyGoogleToken(idToken: string): Promise<GoogleTokenPay
   } catch {
     return null;
   }
-}
-
-export async function getUserById(userId: string): Promise<DbUser | null> {
-  const database = await getDb();
-  if (!database) return null;
-  const { ObjectId } = await import("mongodb");
-  let id: unknown;
-  try {
-    id = new ObjectId(userId);
-  } catch {
-    return null;
-  }
-  const user = await database.collection<DbUser>("users").findOne({ _id: id });
-  return user ?? null;
-}
-
-export function userToPublic(user: DbUser & { _id?: unknown }) {
-  const id = user._id != null ? String(user._id) : undefined;
-  return {
-    id,
-    username: user.displayUsername ?? user.googleName ?? user.email ?? "Player",
-    profilePicUrl: user.profilePicUrl ?? null,
-    email: user.email,
-  };
 }

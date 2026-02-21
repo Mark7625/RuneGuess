@@ -130,9 +130,7 @@ html {
   border: 2px solid transparent;
   background-clip: padding-box;
   /* Always show thumb - when not scrollable, browser shows it as full height */
-}
-
-*::-webkit-scrollbar-thumb:hover {
+}*::-webkit-scrollbar-thumb:hover {
   background-color: var(--muted-foreground);
 }
 
