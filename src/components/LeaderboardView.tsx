@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { GAME_REGISTRY, GAME_TYPE_GUESS_THE_EXAMINE } from "@/lib/game-types";
+import { GAME_REGISTRY, GAME_TYPE_GUESS_THE_EXAMINE, GAME_TYPE_GUESS_THE_MUSIC } from "@/lib/game-types";
 import {
   getGlobalHighscores,
   getGamesPlayedHighscores,
@@ -49,11 +49,12 @@ export function LeaderboardView() {
     setLoading(true);
     setError(false);
     
+    const variant = selectedGame === GAME_TYPE_GUESS_THE_MUSIC ? undefined : selectedDifficulty;
     if (highscoreType === "TOP_SCORE") {
       getGlobalHighscores({ 
         gameType: selectedGame, 
         mode: selectedMode,
-        variant: selectedDifficulty,
+        variant,
         topLimit: 100 
       })
         .then((res) => {
@@ -75,7 +76,7 @@ export function LeaderboardView() {
       getGamesPlayedHighscores({
         gameType: selectedGame,
         mode: selectedMode,
-        variant: selectedDifficulty,
+        variant,
         topLimit: 100
       })
         .then((res) => {
@@ -136,7 +137,8 @@ export function LeaderboardView() {
             Leaderboard
           </h1>
           <p className="text-xs text-muted-foreground">
-            {typeLabel} · {modeLabel} · {selectedDifficulty === "EASY" ? "Easy" : "Hard"}
+            {typeLabel} · {modeLabel}
+            {selectedGame !== GAME_TYPE_GUESS_THE_MUSIC && ` · ${selectedDifficulty === "EASY" ? "Easy" : "Hard"}`}
           </p>
         </div>
       </header>
@@ -155,7 +157,7 @@ export function LeaderboardView() {
                   className="h-8 px-4 rounded-b-none border-b-0"
                   onClick={() => setSelectedGame(game.gameTypeId)}
                 >
-                  {game.gameTypeId === "guess-the-examine" ? "Guess the Examine" : game.gameTypeId}
+                  {game.gameTypeId === GAME_TYPE_GUESS_THE_EXAMINE ? "Guess the Examine" : game.gameTypeId === GAME_TYPE_GUESS_THE_MUSIC ? "Guess the Music" : game.gameTypeId}
                 </Button>
               ))}
             </div>
@@ -181,20 +183,22 @@ export function LeaderboardView() {
           </TabsList>
         </Tabs>
 
-        {/* Difficulty selector */}
-        <div className="flex items-center gap-2 mt-3">
-          <Label className="text-xs text-muted-foreground">Difficulty:</Label>
-          <Tabs value={selectedDifficulty} onValueChange={(value) => setSelectedDifficulty(value as Difficulty)}>
-            <TabsList className="h-8">
-              <TabsTrigger value="EASY" className="text-xs px-3">
-                Easy
-              </TabsTrigger>
-              <TabsTrigger value="HARD" className="text-xs px-3">
-                Hard
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
-        </div>
+        {/* Difficulty selector (only for games that use it, e.g. Guess the Examine) */}
+        {selectedGame !== GAME_TYPE_GUESS_THE_MUSIC && (
+          <div className="flex items-center gap-2 mt-3">
+            <Label className="text-xs text-muted-foreground">Difficulty:</Label>
+            <Tabs value={selectedDifficulty} onValueChange={(value) => setSelectedDifficulty(value as Difficulty)}>
+              <TabsList className="h-8">
+                <TabsTrigger value="EASY" className="text-xs px-3">
+                  Easy
+                </TabsTrigger>
+                <TabsTrigger value="HARD" className="text-xs px-3">
+                  Hard
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
+          </div>
+        )}
 
         {/* Type selector stays compact below */}
         <div className="flex items-center gap-2 mt-3">

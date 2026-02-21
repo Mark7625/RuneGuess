@@ -11,12 +11,15 @@
 export const GAME_TYPE_GUESS_THE_EXAMINE = "guess-the-examine" as const;
 export const PATH_GUESS_THE_EXAMINE = "guesstheexamine" as const;
 
-export type GameTypeId = typeof GAME_TYPE_GUESS_THE_EXAMINE;
+export const GAME_TYPE_GUESS_THE_MUSIC = "guess-the-music" as const;
+export const PATH_GUESS_THE_MUSIC = "guessthemusic" as const;
+
+export type GameTypeId = typeof GAME_TYPE_GUESS_THE_EXAMINE | typeof GAME_TYPE_GUESS_THE_MUSIC;
 
 /** Single source of truth for "which games exist" — use for nav, leaderboard filters, etc. */
 export const GAME_REGISTRY = [
   { gameTypeId: GAME_TYPE_GUESS_THE_EXAMINE, pathSegment: PATH_GUESS_THE_EXAMINE },
-  // { gameTypeId: GAME_TYPE_MY_NEW_GAME, pathSegment: PATH_MY_NEW_GAME },
+  { gameTypeId: GAME_TYPE_GUESS_THE_MUSIC, pathSegment: PATH_GUESS_THE_MUSIC },
 ] as const;
 
 /** localStorage key for OSRS/RS3 game mode preference */

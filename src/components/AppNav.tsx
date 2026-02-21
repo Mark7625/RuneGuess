@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { PATH_GUESS_THE_EXAMINE } from "@/lib/game-types";
+import { PATH_GUESS_THE_EXAMINE, PATH_GUESS_THE_MUSIC } from "@/lib/game-types";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -146,16 +146,13 @@ export function AppNav({
                 </DropdownMenuItem>
 
                 <DropdownMenuItem
-                    className={gameMode === "rs3" ? "text-amber-200 font-medium" : "text-zinc-400"}
-                    onClick={() => {
-                      if (hasActiveGame) {
-                        onGameAreaClick?.();
-                      } else {
-                        setGameMode("rs3");
-                      }
+                    className="text-zinc-400 opacity-50 cursor-not-allowed"
+                    disabled
+                    onClick={(e) => {
+                      e.preventDefault();
                     }}
                 >
-                  <div className="relative h-7 w-7 mr-2 overflow-hidden rounded">
+                  <div className="relative h-7 w-7 mr-2 overflow-hidden rounded opacity-50">
                     <Image
                         src="https://runescape.wiki/images/Game_Client_icon.png?642ff"
                         alt="RS3"
@@ -164,7 +161,7 @@ export function AppNav({
                         className="object-contain"
                     />
                   </div>
-                  RS3
+                  RS3 (disabled)
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -212,26 +209,48 @@ export function AppNav({
                     </Button>
                   </>
               ) : (
-                  <Button
-                      size="sm"
-                      variant={pathname === `/${PATH_GUESS_THE_EXAMINE}` || pathname === "/" ? "secondary" : "ghost"}
-                      className="h-8 px-3"
-                      asChild
-                  >
-                    <Link 
-                      href={`/${PATH_GUESS_THE_EXAMINE}`} 
-                      onClick={(e) => {
-                        if (hasActiveGame) {
-                          e.preventDefault();
-                          onGameAreaClick?.();
-                        } else {
-                          onGameAreaClick?.();
-                        }
-                      }}
+                  <>
+                    <Button
+                        size="sm"
+                        variant={pathname === `/${PATH_GUESS_THE_EXAMINE}` || pathname === "/" ? "secondary" : "ghost"}
+                        className="h-8 px-3"
+                        asChild
                     >
-                      Guess the Examine
-                    </Link>
-                  </Button>
+                      <Link 
+                        href={`/${PATH_GUESS_THE_EXAMINE}`} 
+                        onClick={(e) => {
+                          if (hasActiveGame) {
+                            e.preventDefault();
+                            onGameAreaClick?.();
+                          } else {
+                            onGameAreaClick?.();
+                          }
+                        }}
+                      >
+                        Guess the Examine
+                      </Link>
+                    </Button>
+                    <Button
+                        size="sm"
+                        variant={pathname === `/${PATH_GUESS_THE_MUSIC}` ? "secondary" : "ghost"}
+                        className="h-8 px-3"
+                        asChild
+                    >
+                      <Link 
+                        href={`/${PATH_GUESS_THE_MUSIC}`} 
+                        onClick={(e) => {
+                          if (hasActiveGame) {
+                            e.preventDefault();
+                            onGameAreaClick?.();
+                          } else {
+                            onGameAreaClick?.();
+                          }
+                        }}
+                      >
+                        Guess the Music
+                      </Link>
+                    </Button>
+                  </>
               )}
             </nav>
           </div>

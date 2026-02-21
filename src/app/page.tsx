@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { GuessTheExamineGame, type GuessTheExamineGameHandle } from "@/components/GuessTheExamineGame";
+import { GuessTheMusicGame, type GuessTheMusicGameHandle } from "@/components/GuessTheMusicGame";
 import { LeaderboardView } from "@/components/LeaderboardView";
 import { AppNav } from "@/components/AppNav";
 import { AppFooter } from "@/components/AppFooter";
@@ -12,7 +13,7 @@ import {
   setUsernameModalDismissed,
 } from "@/components/SetUsernameModal";
 import { LeaveGameConfirmDialog } from "@/components/LeaveGameConfirmDialog";
-import { STORAGE_KEY_GAME_MODE, PATH_GUESS_THE_EXAMINE } from "@/lib/game-types";
+import { STORAGE_KEY_GAME_MODE, PATH_GUESS_THE_EXAMINE, PATH_GUESS_THE_MUSIC } from "@/lib/game-types";
 import { useAuth } from "@/lib/auth-context";
 import { Card } from "@/components/ui/card";
 
@@ -32,8 +33,14 @@ export default function HomePage() {
   // Determine view from URL pathname
   const getViewFromPath = (path: string): MainView => {
     if (path === "/leaderboard") return "leaderboard";
-    if (path === `/${PATH_GUESS_THE_EXAMINE}`) return "game";
+    if (path === `/${PATH_GUESS_THE_EXAMINE}` || path === `/${PATH_GUESS_THE_MUSIC}`) return "game";
     return "game"; // default to game (root /)
+  };
+  
+  // Determine which game to show
+  const getCurrentGame = (path: string): "examine" | "music" => {
+    if (path === `/${PATH_GUESS_THE_MUSIC}`) return "music";
+    return "examine"; // default
   };
   
   const [gameMode, setGameMode] = useState<"osrs" | "rs3">(() => getStoredGameMode());
@@ -42,7 +49,8 @@ export default function HomePage() {
   const [hasActiveGame, setHasActiveGame] = useState(false);
   const [showLeaveGameConfirm, setShowLeaveGameConfirm] = useState(false);
   const [pendingNavigation, setPendingNavigation] = useState<(() => void) | null>(null);
-  const gameRef = useRef<GuessTheExamineGameHandle>(null);
+  const examineGameRef = useRef<GuessTheExamineGameHandle>(null);
+  const musicGameRef = useRef<GuessTheMusicGameHandle>(null);
 
   // Get current view directly from pathname to avoid flash
   const view = getViewFromPath(pathname);
@@ -79,15 +87,20 @@ export default function HomePage() {
 
   const handleGameAreaClick = () => {
     if (hasActiveGame) {
-      setPendingNavigation(() => () => router.push(`/${PATH_GUESS_THE_EXAMINE}`));
+      const currentGame = getCurrentGame(pathname);
+      const targetPath = currentGame === "music" ? `/${PATH_GUESS_THE_MUSIC}` : `/${PATH_GUESS_THE_EXAMINE}`;
+      setPendingNavigation(() => () => router.push(targetPath));
       setShowLeaveGameConfirm(true);
     } else {
-      router.push(`/${PATH_GUESS_THE_EXAMINE}`);
+      const currentGame = getCurrentGame(pathname);
+      const targetPath = currentGame === "music" ? `/${PATH_GUESS_THE_MUSIC}` : `/${PATH_GUESS_THE_EXAMINE}`;
+      router.push(targetPath);
     }
   };
 
   const confirmLeaveGame = () => {
-    gameRef.current?.endRun();
+    examineGameRef.current?.endRun();
+    musicGameRef.current?.endRun();
     if (pendingNavigation) {
       pendingNavigation();
       setPendingNavigation(null);
@@ -127,22 +140,39 @@ export default function HomePage() {
           {view === "leaderboard" && <LeaderboardView />}
           {view === "game" && (
             <>
-              {gameMode === "osrs" && (
-                <GuessTheExamineGame
-                  ref={gameRef}
-                  onGameActiveChange={setHasActiveGame}
-                />
-              )}
-              {gameMode === "rs3" && activeRs3Game === "examine" && (
-                <GuessTheExamineGame
-                  ref={gameRef}
-                  onGameActiveChange={setHasActiveGame}
-                />
-              )}
-              {gameMode === "rs3" && activeRs3Game === "ability" && (
-                <Card className="flex min-h-[320px] items-center justify-center p-8">
-                  <p className="text-sm text-muted-foreground">Guess the Ability (RS3) — coming soon.</p>
-                </Card>
+              {getCurrentGame(pathname) === "music" ? (
+                // Music game - only available in OSRS mode for now
+                gameMode === "osrs" ? (
+                  <GuessTheMusicGame
+                    ref={musicGameRef}
+                    onGameActiveChange={setHasActiveGame}
+                  />
+                ) : (
+                  <Card className="flex min-h-[320px] items-center justify-center p-8">
+                    <p className="text-sm text-muted-foreground">Guess the Music is only available in OSRS mode.</p>
+                  </Card>
+                )
+              ) : (
+                // Examine game
+                <>
+                  {gameMode === "osrs" && (
+                    <GuessTheExamineGame
+                      ref={examineGameRef}
+                      onGameActiveChange={setHasActiveGame}
+                    />
+                  )}
+                  {gameMode === "rs3" && activeRs3Game === "examine" && (
+                    <GuessTheExamineGame
+                      ref={examineGameRef}
+                      onGameActiveChange={setHasActiveGame}
+                    />
+                  )}
+                  {gameMode === "rs3" && activeRs3Game === "ability" && (
+                    <Card className="flex min-h-[320px] items-center justify-center p-8">
+                      <p className="text-sm text-muted-foreground">Guess the Ability (RS3) — coming soon.</p>
+                    </Card>
+                  )}
+                </>
               )}
             </>
           )}

@@ -6,7 +6,7 @@
  * then add start/events/actions API here and a game component that uses them.
  */
 
-import { GAME_TYPE_GUESS_THE_EXAMINE, PATH_GUESS_THE_EXAMINE } from "./game-types";
+import { GAME_TYPE_GUESS_THE_EXAMINE, PATH_GUESS_THE_EXAMINE, GAME_TYPE_GUESS_THE_MUSIC, PATH_GUESS_THE_MUSIC } from "./game-types";
 
 // ---- Auth ----
 
@@ -252,10 +252,16 @@ export type GuessTheExamineConfig = {
   easyCategory: ExamineCategoryFilter;
 };
 
+export type MusicGameMode = "limited" | "timed" | "practice";
+
+export type GuessTheMusicConfig = {
+  mode: MusicGameMode;
+};
+
 export type StartSessionResponse = {
   sessionId: string;
   gameType: string;
-  config: GuessTheExamineConfig;
+  config: GuessTheExamineConfig | GuessTheMusicConfig;
 };
 
 export type QuestionEvent = {
@@ -264,6 +270,13 @@ export type QuestionEvent = {
   hintStage: number;
   hintImageUrl?: string | null; // Deprecated - use hintImageData instead
   hintImageData?: string | null; // Base64 encoded image data (data:image/png;base64,...)
+};
+
+export type MusicQuestionEvent = {
+  songName: string;
+  allSongs: string[]; // List of all song names for the game
+  hintStage: number;
+  unlockDetails?: string | null; // Hint details when unlocked
 };
 
 export type TimerEvent = {
@@ -554,6 +567,180 @@ export function endRunBeacon(sessionId: string, pathSegment?: string): void {
   if (!base) return;
   const path = pathSegment ?? PATH_GUESS_THE_EXAMINE;
   const url = apiUrl(`/api/game/${path}/${sessionId}/end`);
+  try {
+    fetch(url, { method: "POST", keepalive: true });
+  } catch {
+    // ignore
+  }
+}
+
+// ---- Music Game API ----
+
+/** GET /api/game/{path}/songs — returns list of all song names */
+export async function getMusicSongNames(): Promise<string[] | null> {
+  const base = getBaseUrl();
+  if (!base) return null;
+  try {
+    const res = await fetch(apiUrl(`/api/game/${PATH_GUESS_THE_MUSIC}/songs`));
+    if (!res.ok) return null;
+    return res.json();
+  } catch {
+    return null;
+  }
+}
+
+/** URL for streaming current song audio — server proxies so real link is never exposed. */
+export function getMusicStreamUrl(sessionId: string, cacheBust?: number): string {
+  const base = apiUrl(`/api/game/${PATH_GUESS_THE_MUSIC}/${sessionId}/stream`);
+  return cacheBust != null ? `${base}?t=${cacheBust}` : base;
+}
+
+/** POST /api/game/{path}/start — pass token when logged in so the session is tied to the user */
+export async function createMusicSession(
+  config: GuessTheMusicConfig,
+  token?: string | null
+): Promise<StartSessionResponse | null> {
+  const base = getBaseUrl();
+  if (!base) return null;
+  const headers: Record<string, string> = { "Content-Type": "application/json" };
+  if (token) headers["Authorization"] = `Bearer ${token}`;
+  try {
+    const res = await fetch(apiUrl(`/api/game/${PATH_GUESS_THE_MUSIC}/start`), {
+      method: "POST",
+      headers,
+      body: JSON.stringify({
+        gameType: GAME_TYPE_GUESS_THE_MUSIC,
+        config: {
+          mode: config.mode.toUpperCase(),
+        },
+      }),
+    });
+    if (!res.ok) return null;
+    return res.json();
+  } catch {
+    return null;
+  }
+}
+
+/** GET /api/game/{path}/{sessionId}/events — returns EventSource */
+export function openMusicSessionEvents(
+  sessionId: string,
+  handlers: {
+    onQuestion?: (data: MusicQuestionEvent) => void;
+    onTimer?: (data: TimerEvent) => void;
+    onGuessResult?: (data: GuessResultEvent) => void;
+    onGameEnded?: (data: GameEndedEvent) => void;
+    onPreCountdown?: (data: PreCountdownEvent) => void;
+    onRunEnded?: (data: RunEndedEvent) => void;
+  }
+): EventSource {
+  const url = apiUrl(`/api/game/${PATH_GUESS_THE_MUSIC}/${sessionId}/events`);
+  const es = new EventSource(url);
+
+  es.addEventListener("music_question", (e: MessageEvent) => {
+    try {
+      const data = JSON.parse(e.data) as MusicQuestionEvent;
+      handlers.onQuestion?.(data);
+    } catch {}
+  });
+  es.addEventListener("timer", (e: MessageEvent) => {
+    try {
+      const data = JSON.parse(e.data) as TimerEvent;
+      handlers.onTimer?.(data);
+    } catch {}
+  });
+  es.addEventListener("guess_result", (e: MessageEvent) => {
+    try {
+      const data = JSON.parse(e.data) as GuessResultEvent;
+      handlers.onGuessResult?.(data);
+    } catch {}
+  });
+  es.addEventListener("game_ended", (e: MessageEvent) => {
+    try {
+      const data = JSON.parse(e.data) as GameEndedEvent;
+      handlers.onGameEnded?.(data);
+    } catch {}
+  });
+  es.addEventListener("pre_countdown", (e: MessageEvent) => {
+    try {
+      const data = JSON.parse(e.data) as PreCountdownEvent;
+      handlers.onPreCountdown?.(data);
+    } catch {}
+  });
+  es.addEventListener("run_ended", (e: MessageEvent) => {
+    try {
+      const data = JSON.parse(e.data) as RunEndedEvent;
+      handlers.onRunEnded?.(data);
+    } catch {}
+  });
+
+  return es;
+}
+
+async function musicSessionPost(
+  sessionId: string,
+  path: string,
+  body?: object
+): Promise<Response> {
+  const url = apiUrl(`/api/game/${PATH_GUESS_THE_MUSIC}/${sessionId}${path}`);
+  return fetch(url, {
+    method: "POST",
+    headers: body ? { "Content-Type": "application/json" } : undefined,
+    body: body ? JSON.stringify(body) : undefined,
+  });
+}
+
+/** POST .../guess */
+export async function submitMusicGuess(
+  sessionId: string,
+  guess: string
+): Promise<{ correct: boolean } | null> {
+  const res = await musicSessionPost(sessionId, "/guess", { guess });
+  if (!res.ok) return null;
+  return res.json();
+}
+
+/** POST .../new-song */
+export async function requestNewSong(sessionId: string): Promise<boolean> {
+  const res = await musicSessionPost(sessionId, "/new-song");
+  return res.ok;
+}
+
+/** POST .../hint */
+export async function requestMusicHint(sessionId: string): Promise<boolean> {
+  const res = await musicSessionPost(sessionId, "/hint");
+  return res.ok;
+}
+
+/** POST .../start-timed */
+export async function startMusicTimed(sessionId: string): Promise<boolean> {
+  const res = await musicSessionPost(sessionId, "/start-timed");
+  return res.ok;
+}
+
+/** POST .../start-limited */
+export async function startMusicLimited(sessionId: string): Promise<boolean> {
+  const res = await musicSessionPost(sessionId, "/start-limited");
+  return res.ok;
+}
+
+/** POST .../start-practice */
+export async function startMusicPractice(sessionId: string): Promise<boolean> {
+  const res = await musicSessionPost(sessionId, "/start-practice");
+  return res.ok;
+}
+
+/** POST .../end */
+export async function endMusicRun(sessionId: string): Promise<boolean> {
+  const res = await musicSessionPost(sessionId, "/end");
+  return res.ok;
+}
+
+/** POST .../end with keepalive for page unload/close — removes session from server when user leaves */
+export function endMusicRunBeacon(sessionId: string): void {
+  const base = getBaseUrl();
+  if (!base) return;
+  const url = apiUrl(`/api/game/${PATH_GUESS_THE_MUSIC}/${sessionId}/end`);
   try {
     fetch(url, { method: "POST", keepalive: true });
   } catch {
